@@ -10,10 +10,10 @@ def style_background_home():
                     background: #5865F2 !important;
                 
                 } 
-                st.App div[data-testid="stColumn"]{
+                .stApp div[data-testid="stColumn"]{
                     background-color: #E0E3FF !important;
                     padding:2.5rem !important;
-                    border-redius:5rem !important;
+                    border-radius:5rem !important;
                 }
         
             </style>
