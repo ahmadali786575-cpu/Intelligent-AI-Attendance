@@ -6,7 +6,7 @@ import numpy as np
 
 import face_recognition_models
 
-from sklearn.svm import SVM
+from sklearn.svm import SVC
 import streamlit as st
 
 from src.database.db import get_all_students
@@ -37,7 +37,7 @@ def get_face_embeddings(image_np):
 
         face_descriptor = facerec.compute_face_descriptor(image_np, shape, 1)   #128 embedding
 
-        encodings.append(np.array(face_recognition_models))
+        encodings.append(np.array(face_descriptor))
 
     return encodings
 
@@ -45,7 +45,7 @@ def get_face_embeddings(image_np):
 @st.cache_resource
 def get_trained_model():
     X = []
-    Yy= []
+    y = []
 
     student_db = get_all_students()
 
@@ -70,7 +70,7 @@ def get_trained_model():
     except ValueError:
         pass
 
-    return {'clf':clf, 'X':x, 'y':y}
+    return {'clf':clf, 'X':X, 'y':y}
 
 
 
@@ -117,4 +117,3 @@ def predict_attendance(class_image_np):
     
     return detected_student, all_students, len(encoding)
 
-    
