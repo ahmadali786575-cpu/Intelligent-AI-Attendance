@@ -21,3 +21,7 @@ pillow
 
 # helps in creating web apps
 streamlit
+
+
+librosa
+resemblyzer
