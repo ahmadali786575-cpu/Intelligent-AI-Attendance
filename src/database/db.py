@@ -1,5 +1,5 @@
 from src.database.config import supabase
-
+import numpy as np
 import bcrypt
 
 def hash_pass(pwd):
@@ -38,3 +38,51 @@ def get_all_students():
     response = supabase.table('students').select("*").execute()
     return response.data
 
+def create_student(new_name, face_embedding=None, voice_embedding=None):
+
+    if face_embedding is None:
+        return None
+
+    # Convert face embedding to plain Python numbers
+    if isinstance(face_embedding, np.ndarray):
+        face_embedding = face_embedding.tolist()
+
+    face_embedding = [
+        float(x)
+        for x in face_embedding
+    ]
+
+    # Don't send voice embedding for now
+    data = {
+        "name": str(new_name),
+        "face_embedding": face_embedding,
+        "voice_embedding": None
+    }
+
+    response = supabase.table("students").insert(data).execute()
+
+    return response.data
+
+
+
+def create_subject(subject_code, name, section, teacher_id):
+    data = {"subject_code": subject_code, "name": name, "section": section, "teacher_id": teacher_id}
+    response = supabase.table("subjects").insert(data).execute()
+    return response.data
+
+
+
+def get_teacher_subjects(teacher_id):
+    response = supabase.table('subjects').select("*, subject_students(count), attendance_logs(timestamp)").eq("teacher_id", teacher_id).execute()
+    subjects = response.data
+
+    for sub in subjects:
+        sub['total_students'] = sub.get("subjects_student", [{}])[0].get('count', 0) if sub.get('subject_students') else 0
+        attendance = sub.get('attendance_logs', [])
+        unique_sessions = len(set(log['timestamp'] for log in attendance))
+        sub['total_classes'] = unique_sessions
+
+        sub.pop('subject_student', None)
+        sub.pop('attendance_logs', None)
+
+    return subjects
