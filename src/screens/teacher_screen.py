@@ -26,6 +26,8 @@ from src.components.dialog_attendance_results import attendance_result_dialog
 
 import pandas as pd
 
+from src.components.dialog_voice_attendance import voice_attendance_dialog
+
 
 
 def teacher_screen():

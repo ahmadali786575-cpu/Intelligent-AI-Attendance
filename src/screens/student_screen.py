@@ -23,6 +23,8 @@ from src.components.subject_card import subject_card
 
 def student_dashboard():
     student_data = st.session_state.student_data
+    if isinstance(student_data, list):
+        student_data = student_data[0]
 
     student_id = student_data['student_id']
 
@@ -48,7 +50,7 @@ def student_dashboard():
 
     with c2:
         if st.button('Enroll in Subject', type='primary', width='stretch'):
-            enroll_dialog()
+            enroll_dialog(student_id)
 
 
 
@@ -80,7 +82,7 @@ def student_dashboard():
         stats = stats_map.get(sid, {"total": 0, "attended": 0})
 
         def unenroll_btn():
-            if st.button("Unenroll from this course", type='tertiary', width='stretch', icon=':material/delete_forever:'):
+            if st.button("Unenroll from this course", type='tertiary', width='stretch', icon=':material/delete_forever:', key=f"unenroll_{sid}"):
                 unenroll_student_to_subject(student_id, sid)
                 st.toast(f"Unenrolled from {sub['name']} successfully!")
                 st.rerun()            
@@ -237,6 +239,7 @@ def student_screen():
 
                             if audio_data:
                                 voice_emb = get_voice_embedding(audio_data.read())
+                                st.write("Voice embedding:", voice_emb)
 
                                 if voice_emb is not None:
                                     voice_emb = list(voice_emb)
