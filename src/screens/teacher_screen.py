@@ -236,6 +236,21 @@ def teacher_tab_manage_subjects():
                 subject_code=sub['subject_code']
             ):
 
+                st.markdown(
+                    f"""
+                    <style>
+                    div.st-key-share_{subject_code} {{
+                        width: 450px !important;
+                    }}
+
+                    div.st-key-share_{subject_code} button {{
+                        width: 450px !important;
+                    }}
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+                )
+
                 if st.button(
                     f"Share Code: {subject_name}",
                     key=f"share_{subject_code}",

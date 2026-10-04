@@ -73,6 +73,18 @@ def student_dashboard():
         if log.get('is_present'):
             stats_map[sid]['attended'] += 1
 
+        # Keep all enrolled subject cards the same size
+    st.markdown(
+        """
+        <style>
+        div[data-testid="stVerticalBlock"] {
+            box-sizing: border-box;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
     cols = st.columns(2)
 
     for i, sub_node in enumerate(subjects):
@@ -96,7 +108,9 @@ def student_dashboard():
                     ('📅', 'Total', stats['total']),
                     ('✅', 'Attended', stats['attended']),
                 ],
-                footer_callback = unenroll_btn
+                footer_callback = unenroll_btn,
+                card_height=240
+                
 
 
             )
