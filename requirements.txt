@@ -1,3 +1,6 @@
+# helps in creating web apps
+streamlit
+
 # utilities libraries
 numpy 
 pandas
@@ -19,8 +22,7 @@ segno
 #helps in image processing
 pillow
 
-# helps in creating web apps
-streamlit
+
 
 
 librosa
