@@ -50,7 +50,7 @@ def student_dashboard():
 
     with c2:
         if st.button('Enroll in Subject', type='primary', width='stretch'):
-            enroll_dialog(student_id)
+            enroll_dialog()
 
 
 
