@@ -1,9 +1,5 @@
 import streamlit as st
 
-from src.screens.home_screen import home_screen
-from src.screens.teacher_screen import teacher_screen
-from src.screens.student_screen import student_screen
-
 
 def main():
 
@@ -20,16 +16,26 @@ def main():
     if join_code:
         st.write("Join code received:", join_code)
 
-    match st.session_state["login_type"]:
+    login_type = st.session_state["login_type"]
 
-        case "teacher":
-            teacher_screen()
+    if login_type == "teacher":
 
-        case "student":
-            student_screen()
+        from src.screens.teacher_screen import teacher_screen
 
-        case None:
-            home_screen()
+        teacher_screen()
+
+    elif login_type == "student":
+
+        from src.screens.student_screen import student_screen
+
+        student_screen()
+
+    else:
+
+        from src.screens.home_screen import home_screen
+
+        home_screen()
 
 
-main()
+if __name__ == "__main__":
+    main()
