@@ -1,5 +1,4 @@
 import streamlit as st
-
 from src.ui.base_layout import style_background_dashboard, style_base_layout
 
 from src.components.header import header_dashboard
@@ -14,7 +13,10 @@ from src.pipelines.face_pipeline import predict_attendance
 from src.components.dialog_attendance_results import attendance_result_dialog
 import numpy as np
 
+from src.components.dialog_edit_subject import edit_subject_dialog
 from datetime import datetime
+from src.components.subject_menu import subject_menu
+
 
 import pandas as pd
 
@@ -202,6 +204,26 @@ def teacher_tab_take_attendance():
 
 def teacher_tab_manage_subjects():
     teacher_id = st.session_state.teacher_data['teacher_id']
+        # Success message
+    if "subject_success_message" in st.session_state:
+
+        st.toast(
+            "Subject updated successfully!",
+            icon="✅"
+        )
+
+        del st.session_state["subject_success_message"]
+
+
+    if "subject_cancel_message" in st.session_state:
+
+        st.toast(
+            "Edit cancelled!",
+            icon="❌"
+        )
+
+        del st.session_state["subject_cancel_message"]
+        
     col1, col2 = st.columns(2)
     with col1:
         st.header('Manage Subjects', width='stretch')
@@ -225,8 +247,55 @@ def teacher_tab_manage_subjects():
                 subject_name=sub['name'],
                 subject_code=sub['subject_code']
             ):
-                col1, col2 = st.columns(2)
+                col1, col2 = st.columns(
+                    2,
+                    vertical_alignment="top",
+                    gap="small"
+                )
+                st.markdown(
+                    """
+                    <style>
 
+                    /* SHARE BUTTON - NORMAL */
+                    [class*="st-key-share_"] button {
+                        background-color: #9C4874 !important;
+                        border-color: #9C4874 !important;
+                        color: white !important;
+                    }
+
+                    [class*="st-key-share_"] button p {
+                        color: white !important;
+                    }
+
+                    [class*="st-key-share_"] button svg {
+                        color: white !important;
+                        fill: white !important;
+                    }
+
+
+                    /* SHARE BUTTON - HOVER */
+                    [class*="st-key-share_"] button:hover {
+                        background-color: #FF2E86 !important;
+                        border-color: #FF2E86 !important;
+                        color: white !important;
+                    }
+
+                    [class*="st-key-share_"] button:hover p {
+                        color: white !important;
+                    }
+
+                    [class*="st-key-share_"] button:hover svg {
+                        color: white !important;
+                        fill: white !important;
+                    }
+
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+                    
+                
                 with col1:
                     if st.button(
                         "Share",
@@ -240,14 +309,12 @@ def teacher_tab_manage_subjects():
                         )
 
                 with col2:
-                    if st.button(
-                        "Options",
-                        key=f"more_{subject_code}",
-                        icon=":material/more_vert:",
-                        width="stretch",
-                        type="primary"
-                    ):
-                        st.info(f"Options for {subject_name}")
+                    subject_menu(
+                        subject_id=sub['subject_id'],
+                        subject_name=subject_name,
+                        subject_code=subject_code,
+                        section=sub['section']
+                    )
 
             subject_card(
                 name=sub['name'],
@@ -256,6 +323,20 @@ def teacher_tab_manage_subjects():
                 stats=stats,
                 footer_callback=share_btn
             )
+            # ==================================================
+            # EDIT SUBJECT DIALOG
+            # ==================================================
+
+        if "editing_subject" in st.session_state:
+
+                editing = st.session_state["editing_subject"]
+
+                edit_subject_dialog(
+                    editing["subject_id"],
+                    editing["subject_name"],
+                    editing["subject_code"],
+                    editing["section"]
+                )
 
     else:
         st.info("NO SUBJECTS FOUND. CREATE ONE ABOVE")
