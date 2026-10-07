@@ -1,5 +1,5 @@
 import streamlit as st
-
+from src.components.dialog_delete_subject import delete_subject_dialog
 
 def subject_menu(
     subject_id,
@@ -15,6 +15,10 @@ def subject_menu(
     edit_mode = st.session_state.get(
         f"edit_mode_{subject_id}",
         False
+    )
+    delete_mode = (
+        st.session_state.get("delete_subject_id")
+        == subject_id
     )
 
 
@@ -94,6 +98,27 @@ def subject_menu(
         unsafe_allow_html=True
     )
 
+    # ==================================================
+    # DELETE MODE
+    # ONLY SHOW OPTIONS BUTTON
+    # ==================================================
+
+    if delete_mode:
+
+        st.button(
+            "Options",
+            icon=":material/more_vert:",
+            width="stretch",
+            key=f"options_delete_{subject_id}",
+            type="secondary"
+        )
+
+        delete_subject_dialog(
+            subject_id=subject_id,
+            subject_name=subject_name
+        )
+
+        return
 
     # ==================================================
     # EDIT MODE
@@ -162,13 +187,7 @@ def subject_menu(
             key=f"delete_{subject_id}"
         ):
 
-            st.session_state[
-                f"edit_mode_{subject_id}"
-            ] = True
-
-            st.session_state[
-                "delete_subject_id"
-            ] = subject_id
+            st.session_state["delete_subject_id"] = subject_id
 
             st.rerun()
 

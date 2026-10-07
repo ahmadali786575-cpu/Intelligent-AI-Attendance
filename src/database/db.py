@@ -95,3 +95,36 @@ def create_attendance(logs):
 def get_attendance_for_teacher(teacher_id):
     response = supabase.table('attendance_logs').select("*, subjects!inner(*)").eq('subjects.teacher_id', teacher_id).execute()
     return response.data
+   
+def delete_subject(subject_id):
+    try:
+
+        # 1. Delete attendance records
+        supabase.table("attendance_logs") \
+            .delete() \
+            .eq("subject_id", subject_id) \
+            .execute()
+
+        # 2. Delete enrolled students
+        supabase.table("subject_students") \
+            .delete() \
+            .eq("subject_id", subject_id) \
+            .execute()
+
+        # 3. Delete subject
+        supabase.table("subjects") \
+            .delete() \
+            .eq("subject_id", subject_id) \
+            .execute()
+
+        return True, None
+
+    except Exception as e:
+
+        print("================================")
+        print("DELETE SUBJECT ERROR")
+        print("================================")
+        print(str(e))
+        print("================================")
+
+        return False, str(e)

@@ -159,18 +159,27 @@ def teacher_tab_take_attendance():
                 enrolled_students = enrolled_res.data
 
                 if not enrolled_students:
+
                     st.warning('No students enrolled in this course')
+
                 else:
 
-                    results, attendance_to_log  = [], []
+                    results, attendance_to_log = [], []
 
-                    current_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-
+                    current_timestamp = datetime.now().strftime(
+                        "%Y-%m-%dT%H:%M:%S"
+                    )
 
                     for node in enrolled_students:
+
                         student = node['students']
-                        sources = all_detected_ids.get(int(student['student_id']), [])
-                        is_present= len(sources) > 0
+
+                        sources = all_detected_ids.get(
+                            int(student['student_id']),
+                            []
+                        )
+
+                        is_present = len(sources) > 0
 
                         results.append({
                             "Name": student['name'],
@@ -186,7 +195,10 @@ def teacher_tab_take_attendance():
                             'is_present': bool(is_present)
                         })
 
-                attendance_result_dialog(pd.DataFrame(results), attendance_to_log)
+                    attendance_result_dialog(
+                        pd.DataFrame(results),
+                        attendance_to_log
+                    )
 
     with c3:
         if st.button('Use Voice Attendance', type='primary', width='stretch', icon=':material/mic:'):
@@ -389,7 +401,29 @@ def teacher_tab_attendance_records():
                   [['Time', 'Subject', 'Subject Code', 'Attendance Stats']]
                   )
     
-    st.dataframe(display_df, width='stretch', hide_index=True)
+    st.dataframe(
+        display_df,
+        width='stretch',
+        hide_index=True,
+        column_config={
+            "Time": st.column_config.TextColumn(
+                "Time",
+                width="small"
+            ),
+            "Subject": st.column_config.TextColumn(
+                "Subject",
+                width="large"
+            ),
+            "Subject Code": st.column_config.TextColumn(
+                "Subject Code",
+                width="small"
+            ),
+            "Attendance Stats": st.column_config.TextColumn(
+                "Attendance Stats",
+                width="medium"
+            )
+        }
+    )
 
 
 def login_teacher(username, password):
