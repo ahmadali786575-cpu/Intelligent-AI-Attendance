@@ -19,7 +19,7 @@ from src.components.subject_menu import subject_menu
 
 
 import pandas as pd
-
+from PIL import Image, ImageOps
 from src.database.config import supabase
 
 
@@ -124,11 +124,44 @@ def teacher_tab_take_attendance():
 
     if st.session_state.attendance_images:
         st.header('Added Photos')
-        gallery_cols = st.columns(4)
 
-        for idx, img in enumerate(st.session_state.attendance_images):
-            with gallery_cols[idx % 4 ]:
-                st.image(img, width='stretch', caption=f'Photo {idx+1}')
+        # 2 fixed-size images per row
+        # 2 images per row
+    gallery_cols = st.columns(2)
+
+    for idx, img in enumerate(st.session_state.attendance_images):
+
+        with gallery_cols[idx % 2]:
+
+            # Fixed-size box
+            box_width = 320
+            box_height = 220
+
+            # Keep the FULL image without cropping
+            display_img = ImageOps.contain(
+                img.convert("RGB"),
+                (box_width, box_height),
+                method=Image.Resampling.LANCZOS
+            )
+
+            # Create fixed-size white canvas
+            canvas = Image.new(
+                "RGB",
+                (box_width, box_height),
+                "white"
+            )
+
+            # Center the complete image
+            x = (box_width - display_img.width) // 2
+            y = (box_height - display_img.height) // 2
+
+            canvas.paste(display_img, (x, y))
+
+            st.image(
+                canvas,
+                width=box_width,
+                caption=f"Photo {idx + 1}"
+            )
     has_photos = bool(st.session_state.attendance_images)
     c1, c2, c3 = st.columns(3)
 

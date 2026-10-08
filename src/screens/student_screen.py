@@ -45,6 +45,12 @@ def student_dashboard():
         subjects = get_student_subjects(student_id)
         logs = get_student_attendance(student_id)
 
+    if not subjects:
+        st.info(
+            "You are not enrolled in any subjects yet. "
+            "Click the button above to enroll!"
+        )
+
     stats_map = {}
 
     for log in logs:
@@ -59,37 +65,43 @@ def student_dashboard():
             stats_map[sid]['attended'] += 1
 
 
-    cols = st.columns(2)
-    for i, sub_node in enumerate(subjects):
-        sub = sub_node['subjects']
-        sid = sub['subject_id']
+    if subjects:
+        cols = st.columns(2)
 
+        for i, sub_node in enumerate(subjects):
+            sub = sub_node['subjects']
+            sid = sub['subject_id']
 
-        stats = stats_map.get(sid,{"total":0, "attended": 0} )
-        def unenroll_button():
-            if st.button(
-                "Unenroll from this course",
-                type='tertiary',
-                width='stretch',
-                icon=':material/delete_forever:',
-                key=f"unenroll_{sid}"
-            ):
-                unenroll_student_to_subject(student_id, sid)
-                st.toast(f"Unenrolled from {sub['name']} successfully!")
-                st.rerun()
-
-        with cols[i % 2]:
-
-            subject_card(
-                name = sub['name'],
-                code =sub['subject_code'],
-                section = sub['section'],
-                stats = [
-                    ('📅', 'Total', stats['total']),
-                    ('✅', 'Attended', stats['attended']),
-                ],
-                footer_callback=unenroll_button
+            stats = stats_map.get(
+                sid,
+                {"total": 0, "attended": 0}
             )
+
+            def unenroll_button():
+                if st.button(
+                    "Unenroll from this course",
+                    type='tertiary',
+                    width='stretch',
+                    icon=':material/delete_forever:',
+                    key=f"unenroll_{sid}"
+                ):
+                    unenroll_student_to_subject(student_id, sid)
+                    st.toast(
+                        f"Unenrolled from {sub['name']} successfully!"
+                    )
+                    st.rerun()
+
+            with cols[i % 2]:
+                subject_card(
+                    name=sub['name'],
+                    code=sub['subject_code'],
+                    section=sub['section'],
+                    stats=[
+                        ('📅', 'Total', stats['total']),
+                        ('✅', 'Attended', stats['attended']),
+                    ],
+                    footer_callback=unenroll_button
+                )
     footer_dashboard()
 
 
@@ -148,7 +160,7 @@ def student_screen():
     if show_registration:
         with st.container(border=True):
             st.header('Register new Profile')
-            new_name = st.text_input("Enter your name", placeholder='E.g. Hamza Rizvi')
+            new_name = st.text_input("Enter your name", placeholder='E.g. Ahmad Ali')
 
             st.subheader('Optional : Voice Enrollment')
             st.info("Enroll your for voice only attendance")
@@ -157,7 +169,7 @@ def student_screen():
             audio_data = None
 
             try:
-                audio_data = st.audio_input('Record a short phrase like I am present, My name is Akash.')
+                audio_data = st.audio_input('Record a short phrase like I am present, My name is Ahmad.')
             except Exception:
                 st.error('Audio Data failed!')
 
